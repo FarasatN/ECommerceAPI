@@ -17,7 +17,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="NewFolder\" />
 	  <Folder Include="Services\Storage\AWS\" />
 	  <Folder Include="Services\Storage\Azure\" />
 	</ItemGroup>

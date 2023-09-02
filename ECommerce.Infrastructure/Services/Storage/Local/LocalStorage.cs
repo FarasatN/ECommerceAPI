@@ -19,7 +19,7 @@ namespace ECommerceAPI.Infrastructure.Services.Storage.Local
 		}
 
 		public async Task DeleteAsync(string path, string fileName)
-			=>  File.Delete($"{path}\\{fileName}");
+			=>  File.Delete($"{path}/{fileName}");
 
 		public List<string> GetFiles(string path)
 		{
@@ -28,7 +28,7 @@ namespace ECommerceAPI.Infrastructure.Services.Storage.Local
 		}
 
 		public bool HasFile(string path, string fileName)
-			=> File.Exists($"{path}\\{fileName}");
+			=> File.Exists($"{path}/{fileName}");
 
 
 
@@ -63,8 +63,8 @@ namespace ECommerceAPI.Infrastructure.Services.Storage.Local
 
 				foreach (IFormFile file in files)
 				{
-					await CopyFileAsync($"{uploadPath}\\{file.Name}", file);
-					datas.Add((file.Name, $"{path}\\{file.Name}"));
+					await CopyFileAsync($"{uploadPath}/{file.Name}", file);
+					datas.Add((file.Name, $"{path}/{file.Name}"));
 				}
 				return datas;
 

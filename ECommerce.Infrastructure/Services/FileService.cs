@@ -83,7 +83,7 @@ namespace ECommerceAPI.Infrastructure.Services
 					}
 				}
 				
-				if (File.Exists($"{path}\\{newFileName}"))
+				if (File.Exists($"{path}/{newFileName}"))
 				{
 					return await FileRenameAsync(path, newFileName, false);
 				}
@@ -114,8 +114,8 @@ namespace ECommerceAPI.Infrastructure.Services
 				{
 
 					string fileNewName = await FileRenameAsync(uploadPath,file.FileName);
-					bool result = await CopyFileAsync($"{uploadPath}\\{fileNewName}", file);
-					datas.Add((fileNewName, $"{path}\\{fileNewName}"));
+					bool result = await CopyFileAsync($"{uploadPath}/{fileNewName}", file);
+					datas.Add((fileNewName, $"{path}/{fileNewName}"));
 					results.Add(result);
 				}
 

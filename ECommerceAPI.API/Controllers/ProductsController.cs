@@ -33,9 +33,10 @@ namespace ECommerceAPI.API.Controllers
 		private readonly IInvoiceFileReadRepository _invoiceFileReadRepository;
 		private readonly IInvoiceFileWriteRepository _invoiceFileWriteRepository;
 		private readonly IStorageService _storageService;
+		private readonly IConfiguration _configuration;
 
 
-		public ProductsController(IProductWriteRespository productWriteRespository, IProductReadRepository productReadRespository, IWebHostEnvironment webHostEnvironment, IFileWriteRepository fileWriteRepository, IProductImageFileReadRepository productImageFileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IFileReadRepository fileReadRepository, IStorageService storageService)
+		public ProductsController(IProductWriteRespository productWriteRespository, IProductReadRepository productReadRespository, IWebHostEnvironment webHostEnvironment, IFileWriteRepository fileWriteRepository, IProductImageFileReadRepository productImageFileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IFileReadRepository fileReadRepository, IStorageService storageService, IConfiguration configuration)
 		{
 			_productWriteRespository = productWriteRespository;
 			_productReadRespository = productReadRespository;
@@ -47,6 +48,7 @@ namespace ECommerceAPI.API.Controllers
 			_invoiceFileWriteRepository = invoiceFileWriteRepository;
 			_fileReadRepository = fileReadRepository;
 			_storageService = storageService;
+			_configuration = configuration;
 		}
 
 		[HttpGet("GetAll")]
@@ -61,7 +63,8 @@ namespace ECommerceAPI.API.Controllers
 				p.Price,
 				p.CreatedDate,
 				p.UpdatedDate
-			}).Skip(pagination.Size).Take(pagination.Page*pagination.Size);
+			})
+			.Skip(pagination.Size).Take(pagination.Page *pagination.Size);
 
 			return Ok(new
 			{
@@ -110,7 +113,7 @@ namespace ECommerceAPI.API.Controllers
 		}
 
 		[HttpPost("Upload")]
-		public async Task<IActionResult> Upload()
+		public async Task<IActionResult> Upload(string id)
 		{
 			//var datas = await _fileService.UploadAsync("resources/product-images", Request.Form.Files);
 			//var result = await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d=> new ProductImageFile()
@@ -145,22 +148,73 @@ namespace ECommerceAPI.API.Controllers
 
 			//-----------------------------
 
-			var datas = await _storageService.UploadAsync("resources/files", Request.Form.Files);
-			var result = await _fileWriteRepository.AddRangeAsync(datas.Select(d => new ECommerceAPI.Domain.Entities.File()
-			{
-				FileName = d.fileName,
-				Path = d.pathOrContainerName,
-				Storage = _storageService.StorageName
-			}).ToList());
-			await _fileWriteRepository.SaveAsync();
+			//var datas = await _storageService.UploadAsync("resources/files", Request.Form.Files);
+			//var result = await _fileWriteRepository.AddRangeAsync(datas.Select(d => new ECommerceAPI.Domain.Entities.File()
+			//{
+			//	FileName = d.fileName,
+			//	Path = d.pathOrContainerName,
+			//	Storage = _storageService.StorageName
+			//}).ToList());
+			//await _fileWriteRepository.SaveAsync();
 
+
+			var result = await _storageService.UploadAsync("resources/photo-images", Request.Form.Files);
+			var product = await _productReadRespository.GetByIdAsync(id);
+
+			//for ile butun sekilleri bir bir doldurmaq da olar
+			//meselen:
+			//foreach(var r in result)
+			//{
+			//	product.ProductImageFiles.Add(new()
+			//	{
+			//		FileName = r.fileName,
+			//		Path = r.pathOrContainerName,
+			//		Storage = _storageService.StorageName,
+			//		Products = new List<Product>() { product }
+			//	});
+			//}
+			//await _productImageFileWriteRepository.SaveAsync();
+
+			await _productImageFileWriteRepository.AddRangeAsync(result.Select(r => new ProductImageFile
+			{
+				FileName = r.fileName,
+				Path = r.pathOrContainerName,
+				Storage = _storageService.StorageName,
+				Products = new List<Product>() { product }
+			}).ToList());
+			await _productImageFileWriteRepository.SaveAsync();
 
 			return Ok();
 		}
 
+		[HttpGet("GetProductImages/{id}")]
+		public async Task<IActionResult> GetProductImages(string id)
+		{
+			Product? product = await _productReadRespository.Table.Include(p=>p.ProductImageFiles)
+				.FirstOrDefaultAsync(p=>p.Id == Guid.Parse(id));
+			return Ok(product.ProductImageFiles.Select(p=> new
+			{
+				Path = $"{_configuration["BaseStorageUrl:Local"]}/{p.Path}",
+				Filename = p.FileName,
+				Id = p.Id
+			}));
+		}
+
+
+		[HttpDelete("DeleteProductImage/{id}")]
+		public async Task<IActionResult> DeleteProductImage(string id, string imageId)
+		{
+			Product? product = await _productReadRespository.Table.Include(p => p.ProductImageFiles)
+				.FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
+			ProductImageFile productImageFile = product.ProductImageFiles.FirstOrDefault(p => p.Id == Guid.Parse(imageId));
+			product.ProductImageFiles.Remove(productImageFile); 
+			await _productWriteRespository.SaveAsync();
+			return Ok(); 
+		}
 
 
 
+		//-------------------------------------------------
 		//[HttpGet]
 		//public IActionResult Get()
 		//{
@@ -209,5 +263,6 @@ namespace ECommerceAPI.API.Controllers
 		//	var product = await _productReadRespository.GetByIdAsync(id);
 		//	return Ok(product);
 		//}
+		//-----------------------------------------
 	}
 }
