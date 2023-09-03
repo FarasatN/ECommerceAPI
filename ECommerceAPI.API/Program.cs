@@ -12,6 +12,7 @@ using ECommerceAPI.Application.Validators.Products;
 using ECommerceAPI.Infrastructure.Filters;
 using ECommerceAPI.Infrastructure;
 using ECommerceAPI.Infrastructure.Services.Storage.Local;
+using ECommerceAPI.Application;
 
 internal class Program
 {
@@ -29,6 +30,7 @@ internal class Program
 		//builder.Services.AddSingleton<IOrderReadRepository, OrderReadRepository>();
 		//builder.Services.AddSingleton<IOrderWriteRepository, OrderWriteRepository>();
 
+		builder.Services.AddpplicationService();
 		builder.Services.AddPersistenceServices(builder.Configuration);
 		builder.Services.AddInfrastructureServices();
 		builder.Services.AddStorage<LocalStorage>();
