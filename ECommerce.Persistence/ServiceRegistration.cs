@@ -10,6 +10,7 @@ using ECommerceAPI.Application.Repositories.InvoiceFile_App;
 using ECommerceAPI.Application.Repositories.Order_App;
 using ECommerceAPI.Application.Repositories.Product_App;
 using ECommerceAPI.Application.Repositories.ProductImageFile_App;
+using ECommerceAPI.Domain.Entities.Identity;
 using ECommerceAPI.Persistence.Contexts;
 using ECommerceAPI.Persistence.Repositories;
 using ECommerceAPI.Persistence.Repositories.Customer_Pers;
@@ -34,6 +35,19 @@ namespace ECommerceAPI.Persistence
 			services.AddDbContext<ECommerceAPIDbContext>(options => options.UseNpgsql(Configuration.ConnectionString)
 				//,ServiceLifetime.Singleton
 				);
+			services.AddIdentity<AppUser, AppRole>(options =>
+				{
+					options.Password.RequiredLength = 8;
+					options.Password.RequireNonAlphanumeric = false;
+					options.Password.RequireDigit = false;
+					options.Password.RequireLowercase = false;
+					options.Password.RequireUppercase = false;
+
+
+				}
+
+			).AddEntityFrameworkStores<ECommerceAPIDbContext>();
+
 
 			//services.AddSingleton<IProductReadRepository, ProductReadRepository>();
 			//services.AddSingleton<IProductWriteRespository, ProductWriteRepository>();

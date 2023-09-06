@@ -21,6 +21,7 @@ using ECommerceAPI.Domain.Entities;
 using ECommerceAPI.Persistence.Contexts;
 using ECommerceAPI.Persistence.Repositories.Product_Pers;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ namespace ECommerceAPI.API.Controllers
 {
     [Route("api/[controller]")]
 	[ApiController]
+	[Authorize(AuthenticationSchemes = "Admin")]
 	public class ProductsController : ControllerBase
 	{
 		private readonly IMediator _mediator;
