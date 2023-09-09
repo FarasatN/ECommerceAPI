@@ -1,67 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ECommerceAPI.Application.Abstractions.Token;
-using ECommerceAPI.Application.DTOs;
-using ECommerceAPI.Application.Exceptions;
-using ECommerceAPI.Application.Features.Commands.AppUser.CreateUser;
+﻿using ECommerceAPI.Application.Abstractions.Services.Authentications;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace ECommerceAPI.Application.Features.Commands.AppUser.LoginUser
 {
 	public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, LoginUserCommandResponse>
 	{
-		private readonly UserManager<Domain.Entities.Identity.AppUser> _userManager;
-		private readonly SignInManager<Domain.Entities.Identity.AppUser> _signInManager;
-		private readonly ITokenHandler _tokenHandler;
+		private readonly IInternalAuthService _internalAuthService;
 
-		public LoginUserCommandHandler(UserManager<Domain.Entities.Identity.AppUser> userManager, SignInManager<Domain.Entities.Identity.AppUser> signInManager, ITokenHandler tokenHandler)
+		public LoginUserCommandHandler(IInternalAuthService internalAuthService)
 		{
-			_userManager = userManager;
-			_signInManager = signInManager;
-			_tokenHandler = tokenHandler;
+			_internalAuthService = internalAuthService;
 		}
 
 		public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
 		{
-			Domain.Entities.Identity.AppUser user = await _userManager.FindByNameAsync(request.UsernameOrEmail);
-			if (user == null)
+			var response = await _internalAuthService.LoginAsync(request.UsernameOrEmail, request.Password, 15);
+			return new()
 			{
-				user = await _userManager.FindByEmailAsync(request.UsernameOrEmail);
-			}
-
-			if (user == null)
-			{
-				throw new UserNotFoundException();
-			}
-
-			SignInResult result =  await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-
-
-			LoginUserCommandResponse response = new() { Succeeded = result.Succeeded };
-
-			if (result.Succeeded)
-			{
-				//authentication successfull ..
-				//authorization ...
-				Token token = _tokenHandler.CreateAccessToken(15);
-
-				response.Token = token;
-				response.Message = "User has successfuly logon";
-
-				return response;
-			}
-			//else
-			//{
-				//response.Message = "Error";
-				throw new AuthenticationErrorException();
-			//}
-
-
-			//return response;
+				Message = response.Message,
+				Succeeded = response.Succeeded,
+				Token = response.Token
+			};
 		}
 	}
 }

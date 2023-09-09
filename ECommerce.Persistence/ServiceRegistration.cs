@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ECommerceAPI.Application.Abstractions.Services;
+using ECommerceAPI.Application.Abstractions.Services.Authentications;
 using ECommerceAPI.Application.Repositories;
 using ECommerceAPI.Application.Repositories.Customer_App;
 using ECommerceAPI.Application.Repositories.File_App;
@@ -19,6 +21,7 @@ using ECommerceAPI.Persistence.Repositories.InvoiceFile_Pers;
 using ECommerceAPI.Persistence.Repositories.Order_Pers;
 using ECommerceAPI.Persistence.Repositories.Product_Pers;
 using ECommerceAPI.Persistence.Repositories.ProductImageFile_Pers;
+using ECommerceAPI.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,6 +73,10 @@ namespace ECommerceAPI.Persistence
 			services.AddScoped<IProductImageFileReadRepository, ProductImageFileReadRepository>();
 			services.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
 
+			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<IAuthService, AuthService>();
+			services.AddScoped<IInternalAuthService, AuthService>();
+			services.AddScoped<IExternalAuthService, AuthService>();
 
 			return services;
 		}
