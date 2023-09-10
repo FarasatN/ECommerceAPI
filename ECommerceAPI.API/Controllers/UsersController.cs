@@ -27,5 +27,12 @@ namespace ECommerceAPI.API.Controllers
 			return Ok(response);
 		}
 
+		[HttpGet("Test")]
+		public IActionResult Test()
+		{
+
+			return Ok("Test User");
+		}
+
 	}
 }

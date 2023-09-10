@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using ECommerceAPI.Application.Abstractions.Token;
 using ECommerceAPI.Application.DTOs;
+using ECommerceAPI.Domain.Entities.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,7 +21,7 @@ namespace ECommerceAPI.Infrastructure.Services.Token
 			_configuration = configuration;
 		}
 
-		public Application.DTOs.Token CreateAccessToken(int second)
+		public Application.DTOs.Token CreateAccessToken(int second, AppUser user)
 		{
             Application.DTOs.Token token = new();
 
@@ -34,7 +36,8 @@ namespace ECommerceAPI.Infrastructure.Services.Token
 				issuer: _configuration["Token:Issuer"],
 				expires: token.Expiration,
 				notBefore: DateTime.UtcNow,
-				signingCredentials: signingCredentials
+				signingCredentials: signingCredentials,
+				claims: new List<Claim> { new(ClaimTypes.Name,user.UserName)}
 				);
 
 			//Token yaradici classdan bir numune aliriq

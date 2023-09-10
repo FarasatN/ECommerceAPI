@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ECommerceAPI.Application.Repositories.Product_App;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ECommerceAPI.Application.Features.Commands.Product.UpdateProduct
 {
@@ -12,6 +13,7 @@ namespace ECommerceAPI.Application.Features.Commands.Product.UpdateProduct
 	{
 		private readonly IProductWriteRespository _productWriteRespository;
 		private readonly IProductReadRepository _productReadRespository;
+		private readonly ILogger<UpdateProductCommandHandler> _logger;
 
 		public UpdateProductCommandHandler(IProductWriteRespository productWriteRespository, IProductReadRepository productReadRespository)
 		{
@@ -27,6 +29,7 @@ namespace ECommerceAPI.Application.Features.Commands.Product.UpdateProduct
 			product.Name = request.Name;
 			product.Price = request.Price;
 			await _productWriteRespository.SaveAsync();
+			_logger.LogInformation("Product updated");
 
 			return new();
 		}
