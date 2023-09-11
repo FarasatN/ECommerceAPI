@@ -25,6 +25,8 @@ using Serilog.Context;
 using ECommerceAPI.API.Configurations.ColumnWriters;
 using Microsoft.AspNetCore.HttpLogging;
 using ECommerceAPI.API.Extensions;
+using ECommerceAPI.SignalR;
+using ECommerceAPI.SignalR.Hubs;
 
 internal class Program
 {
@@ -56,6 +58,7 @@ internal class Program
 		builder.Services.AddPersistenceServices(builder.Configuration);
 		builder.Services.AddInfrastructureServices();
 		builder.Services.AddStorage<LocalStorage>();
+		builder.Services.AddSignalRServices();
 		//builder.Services.AddStorage(ECommerceAPI.Infrastructure.ServiceRegistration.StorageType.Local);
 
 		Logger log = new LoggerConfiguration()
@@ -79,7 +82,7 @@ internal class Program
 		builder.Host.UseSerilog(log);
 
 		//builder.Services.AddCors(options=>options.AddDefaultPolicy(policy=>policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));//her kes request ede biler- duzgun deyil
-		builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+		builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
 		builder.Services.AddControllers(options=>options.Filters.Add<ValidationFilter>()).AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>()).ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -140,7 +143,7 @@ internal class Program
 		});
 
 		app.MapControllers();
-
+		app.MapHubs();
 		app.Run();
 	}
 }

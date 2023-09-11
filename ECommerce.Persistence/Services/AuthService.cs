@@ -74,7 +74,7 @@ namespace ECommerceAPI.Persistence.Services
 			}
 
 			Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime, user);
-			await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 10);
+			await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 300);
 
 			return new()
 			{
@@ -107,7 +107,7 @@ namespace ECommerceAPI.Persistence.Services
 				//authentication successfull ..
 				//authorization ...
 				Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime, user);
-				await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 10);
+				await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 300);
 
 				response.Token = token;
 				response.Message = "User has successfuly logon";
@@ -130,7 +130,7 @@ namespace ECommerceAPI.Persistence.Services
 			if(user == null && user?.RefreshTokenEndDate > DateTime.UtcNow)
 			{
 				Token token = _tokenHandler.CreateAccessToken(15,user);
-				await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15);
+				await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 300);
 				return new()
 				{
 					Token = token,
