@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ECommerceAPI.Application.Abstractions.Services;
+﻿using ECommerceAPI.Application.Abstractions.Services;
 using ECommerceAPI.Application.Abstractions.Services.Authentications;
-using ECommerceAPI.Application.Repositories;
+using ECommerceAPI.Application.Repositories.Basket_App;
+using ECommerceAPI.Application.Repositories.Basket_Item_App;
 using ECommerceAPI.Application.Repositories.Customer_App;
 using ECommerceAPI.Application.Repositories.File_App;
 using ECommerceAPI.Application.Repositories.InvoiceFile_App;
@@ -14,7 +10,8 @@ using ECommerceAPI.Application.Repositories.Product_App;
 using ECommerceAPI.Application.Repositories.ProductImageFile_App;
 using ECommerceAPI.Domain.Entities.Identity;
 using ECommerceAPI.Persistence.Contexts;
-using ECommerceAPI.Persistence.Repositories;
+using ECommerceAPI.Persistence.Repositories.Basket_Pers;
+using ECommerceAPI.Persistence.Repositories.BasketItem_Pers;
 using ECommerceAPI.Persistence.Repositories.Customer_Pers;
 using ECommerceAPI.Persistence.Repositories.File_Pers;
 using ECommerceAPI.Persistence.Repositories.InvoiceFile_Pers;
@@ -73,10 +70,18 @@ namespace ECommerceAPI.Persistence
 			services.AddScoped<IProductImageFileReadRepository, ProductImageFileReadRepository>();
 			services.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
 
+			services.AddScoped<IBasketReadRepository, BasketReadRepository>();
+			services.AddScoped<IBasketWriteRepository, BasketWriteRepository>();
+			services.AddScoped<IBasketItemReadRepository, BasketItemReadRepository>();
+			services.AddScoped<IBasketItemWriteRepository, BasketItemWriteRepository>();
+
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IAuthService, AuthService>();
 			services.AddScoped<IInternalAuthService, AuthService>();
 			services.AddScoped<IExternalAuthService, AuthService>();
+			services.AddScoped<IBasketService, BasketService>();
+
+
 
 			return services;
 		}

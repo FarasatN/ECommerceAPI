@@ -3,6 +3,7 @@ using ECommerceAPI.Application.Abstractions.Storage;
 using ECommerceAPI.Application.Features.Commands.Product.CreateProduct;
 using ECommerceAPI.Application.Features.Commands.Product.RemoveProduct;
 using ECommerceAPI.Application.Features.Commands.Product.UpdateProduct;
+using ECommerceAPI.Application.Features.Commands.ProductImageFile.ChangeShowcaseImage;
 using ECommerceAPI.Application.Features.Commands.ProductImageFile.RemoveProductImage;
 using ECommerceAPI.Application.Features.Commands.ProductImageFile.UploadProductImage;
 using ECommerceAPI.Application.Features.Queries.Product.GetAllProducts;
@@ -31,7 +32,6 @@ namespace ECommerceAPI.API.Controllers
 {
     [Route("api/[controller]")]
 	[ApiController]
-	[Authorize(AuthenticationSchemes = "Admin")]
 	public class ProductsController : ControllerBase
 	{
 		private readonly IMediator _mediator;
@@ -77,6 +77,7 @@ namespace ECommerceAPI.API.Controllers
 		}
 
 		[HttpPost("Add")]
+		[Authorize(AuthenticationSchemes = "Admin")]
 		public async Task<IActionResult> Post(
 			//VM_Create_Product model,
 			CreateProductCommandRequest createProductCommandRequest
@@ -97,6 +98,7 @@ namespace ECommerceAPI.API.Controllers
 		}
 
 		[HttpPut("Update")]
+		[Authorize(AuthenticationSchemes = "Admin")]
 		public async Task<IActionResult> Put([FromBody]UpdateProductCommandRequest updateProductCommandRequest)
 		{
 			var response =  await _mediator.Send(updateProductCommandRequest);
@@ -104,6 +106,7 @@ namespace ECommerceAPI.API.Controllers
 		}
 
 		[HttpDelete("Delete/{Id}")]
+		[Authorize(AuthenticationSchemes = "Admin")]
 		public async Task<IActionResult> Delete([FromRoute]RemoveProductCommandRequest removeProductCommandRequest)
 		{
 			var response = await _mediator.Send(removeProductCommandRequest);
@@ -111,6 +114,7 @@ namespace ECommerceAPI.API.Controllers
 		}
 
 		[HttpPost("Upload")]
+		[Authorize(AuthenticationSchemes = "Admin")]
 		public async Task<IActionResult> Upload([FromQuery]UploadProductImageCommandRequest uploadProductImageCommandRequest)
 		{
 			//-------------------------
@@ -172,6 +176,7 @@ namespace ECommerceAPI.API.Controllers
 
 
 		[HttpDelete("DeleteProductImage/{Id}")]
+		[Authorize(AuthenticationSchemes = "Admin")]
 		public async Task<IActionResult> DeleteProductImage([FromRoute]RemoveProductImageCommandRequest removeProductImageCommandRequest, [FromQuery]string ImageId)
 		{
 			removeProductImageCommandRequest.ImageId = ImageId;
@@ -181,6 +186,13 @@ namespace ECommerceAPI.API.Controllers
 
 
 
+		[HttpGet("[action]")]
+		[Authorize(AuthenticationSchemes = "Admin")]
+		public async Task<IActionResult> ChangeShowcaseImage([FromQuery]ChangeShowcaseImageCommandRequest changeShowcaseImageCommandRequest)
+		{
+			ChangeShowcaseImageCommandResponse response = await _mediator.Send(changeShowcaseImageCommandRequest);
+			return Ok(response);
+		}
 
 
 
@@ -193,42 +205,42 @@ namespace ECommerceAPI.API.Controllers
 		//[HttpGet]
 		//public IActionResult Get()
 		//{
-			//_ = _productWriteRespository.AddRangeAsync(new()
-			//{
-			//	new(){Id = Guid.NewGuid(), Name = "Product 1", Price = 100, CreatedDate = DateTime.UtcNow, Stock = 10},
-			//	new(){Id = Guid.NewGuid(), Name = "Product 2", Price = 200, CreatedDate = DateTime.UtcNow, Stock = 10},
-			//	new(){Id = Guid.NewGuid(), Name = "Product 3", Price = 300, CreatedDate = DateTime.UtcNow, Stock = 10},
-			//});
-			//var count = await _productWriteRespository.SaveAsync();
-			//Console.WriteLine(count);
+		//_ = _productWriteRespository.AddRangeAsync(new()
+		//{
+		//	new(){Id = Guid.NewGuid(), Name = "Product 1", Price = 100, CreatedDate = DateTime.UtcNow, Stock = 10},
+		//	new(){Id = Guid.NewGuid(), Name = "Product 2", Price = 200, CreatedDate = DateTime.UtcNow, Stock = 10},
+		//	new(){Id = Guid.NewGuid(), Name = "Product 3", Price = 300, CreatedDate = DateTime.UtcNow, Stock = 10},
+		//});
+		//var count = await _productWriteRespository.SaveAsync();
+		//Console.WriteLine(count);
 
-			//var data = await _productReadRespository.GetByIdAsync("d399dba4-d62c-49f6-8d1d-160283ac4399",false);
-			//Console.WriteLine(data.Name);
-			//data.Name = "Notebook2";
-			//await _productWriteRespository.SaveAsync();
-			//Console.WriteLine(data.Name);
+		//var data = await _productReadRespository.GetByIdAsync("d399dba4-d62c-49f6-8d1d-160283ac4399",false);
+		//Console.WriteLine(data.Name);
+		//data.Name = "Notebook2";
+		//await _productWriteRespository.SaveAsync();
+		//Console.WriteLine(data.Name);
 
-			//await _productWriteRespository.AddAsync(new() {Name = "C Product", Price = 1.500F,Stock = 10, CreatedDate = DateTime.UtcNow });
-			//await _productWriteRespository.SaveAsync();
-
-
-			//---------------------------------------------------
-
-			//var customerId = Guid.NewGuid();
-			//await _customerWriteRepository.AddAsync(new() { Id = customerId, Name = "Mardan" });
-
-			//await _orderWriteRepository.AddAsync(new() { Description = "bla bla", Address = "Baku", CustomerId = customerId });
-			//await _orderWriteRepository.AddAsync(new() { Description = "bla bla bla", Address = "Shamakhy", CustomerId = customerId });
-			//await _orderWriteRepository.SaveAsync();
+		//await _productWriteRespository.AddAsync(new() {Name = "C Product", Price = 1.500F,Stock = 10, CreatedDate = DateTime.UtcNow });
+		//await _productWriteRespository.SaveAsync();
 
 
-			//var order = await _orderReadRepository.GetByIdAsync("9798d0ad-2542-4a85-ac54-dfb25b2d7733");
-			//order.Address = "Sumqayit";
-			//await _orderWriteRepository.SaveAsync();
+		//---------------------------------------------------
+
+		//var customerId = Guid.NewGuid();
+		//await _customerWriteRepository.AddAsync(new() { Id = customerId, Name = "Mardan" });
+
+		//await _orderWriteRepository.AddAsync(new() { Description = "bla bla", Address = "Baku", CustomerId = customerId });
+		//await _orderWriteRepository.AddAsync(new() { Description = "bla bla bla", Address = "Shamakhy", CustomerId = customerId });
+		//await _orderWriteRepository.SaveAsync();
 
 
-			//var products = _productReadRespository.GetAll();
-			//return Ok(products);
+		//var order = await _orderReadRepository.GetByIdAsync("9798d0ad-2542-4a85-ac54-dfb25b2d7733");
+		//order.Address = "Sumqayit";
+		//await _orderWriteRepository.SaveAsync();
+
+
+		//var products = _productReadRespository.GetAll();
+		//return Ok(products);
 		//}
 
 

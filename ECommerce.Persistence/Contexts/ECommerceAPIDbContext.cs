@@ -44,6 +44,17 @@ namespace ECommerceAPI.Persistence.Contexts
             return  await base.SaveChangesAsync(cancellationToken);
 		}
 
+		protected override void OnModelCreating(ModelBuilder builder)
+		{
+			builder.Entity<Order>()
+				.HasKey(b => b.Id);
+			builder.Entity<Basket>()
+				.HasOne(b => b.Order)
+				.WithOne(o => o.Basket)
+				.HasForeignKey<Order>(b => b.Id);
+			base.OnModelCreating(builder);
+		}
+
 		public DbSet<Product> Products { get; set; }
 		public DbSet<Order> Orders { get; set; }
 		public DbSet<Customer> Customers { get; set; }
@@ -51,6 +62,8 @@ namespace ECommerceAPI.Persistence.Contexts
 		public DbSet<Domain.Entities.File> Files { get; set; }
 		public DbSet<ProductImageFile> ProductImageFiles { get; set; }
 		public DbSet<InvoiceFile> InvoiceFiles { get; set; }
+		public DbSet<Basket> Baskets { get; set; }
+		public DbSet<BasketItem> BasketItems { get; set; }
 
 	}
 }

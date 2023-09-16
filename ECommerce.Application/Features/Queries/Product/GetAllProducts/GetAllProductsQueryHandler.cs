@@ -7,6 +7,7 @@ using ECommerceAPI.Application.Features.Commands.Product.UpdateProduct;
 using ECommerceAPI.Application.Repositories.Product_App;
 using ECommerceAPI.Application.RequestParameters;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ECommerceAPI.Application.Features.Queries.Product.GetAllProducts
@@ -26,9 +27,10 @@ namespace ECommerceAPI.Application.Features.Queries.Product.GetAllProducts
 		public async Task<GetAllProductsQueryResponse> Handle(GetAllProductsQueryRequest request, CancellationToken cancellationToken)
         {
             
-            var totalCount = _productReadRespository.GetAll(false).Count();
+            var totalProductCount = _productReadRespository.GetAll(false).Count();
             var products = _productReadRespository.GetAll(false)
                 .Skip(request.Size).Take(request.Page * request.Size)
+                .Include(p=>p.ProductImageFiles)
                 .Select(p => new
                 {
                     p.Id,
@@ -36,15 +38,16 @@ namespace ECommerceAPI.Application.Features.Queries.Product.GetAllProducts
                     p.Stock,
                     p.Price,
                     p.CreatedDate,
-                    p.UpdatedDate
+                    p.UpdatedDate,
+                    p.ProductImageFiles
                 }).ToList();
 
 
             return new()
             {
                 Products = products,
-                TotalCount = totalCount
-            };
+				TotalProductCount = totalProductCount
+			};
         }
     }
 }

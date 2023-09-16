@@ -34,6 +34,7 @@ internal class Program
 	{
 		var builder = WebApplication.CreateBuilder(args);
 		// Add services to the container.
+		builder.Services.AddHttpContextAccessor();
 
 		builder.Services.AddHttpLogging(logging =>
 		{
@@ -44,6 +45,7 @@ internal class Program
 			logging.ResponseBodyLogLimit = 4096;
 
 		});
+
 
 
 		//builder.Services.AddDbContext<ECommerceAPIDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresSQL")),ServiceLifetime.Singleton);
