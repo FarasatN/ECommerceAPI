@@ -15,6 +15,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 
 namespace ECommerceAPI.Persistence.Services
 {
@@ -140,7 +141,13 @@ namespace ECommerceAPI.Persistence.Services
 			}
 			else
 			{
-				throw new UserNotFoundException();
+				//throw new UserNotFoundException();
+				return new()
+				{
+					Token = null,
+					Message = "Internal error",
+					Succeeded = false
+				};
 			}
 
 		}

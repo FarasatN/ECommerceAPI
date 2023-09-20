@@ -124,5 +124,23 @@ namespace ECommerceAPI.Persistence.Services
 			}
 
 		}
+
+
+		public  async Task<Basket> GetUserActiveBasket()
+		{
+			
+			Basket? basket = await  ContextUser();
+			return basket;
+		}
+
+
+		//public Basket GetUserActiveBasket()
+		//{
+		//	get
+		//		{
+		//		Basket? basket = ContextUser().Result();
+		//		return basket;
+		//	}	
+		//}
 	}
 }
