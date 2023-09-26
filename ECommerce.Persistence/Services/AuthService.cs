@@ -9,10 +9,12 @@ using ECommerceAPI.Application.DTOs;
 using ECommerceAPI.Application.DTOs.User;
 using ECommerceAPI.Application.Exceptions;
 using ECommerceAPI.Application.Features.Commands.AppUser.LoginUser;
+using ECommerceAPI.Application.Helpers;
 using ECommerceAPI.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
@@ -26,15 +28,16 @@ namespace ECommerceAPI.Persistence.Services
 		private readonly ITokenHandler _tokenHandler;
 		private readonly SignInManager<Domain.Entities.Identity.AppUser> _signInManager;
 		private readonly IUserService _userService;
+		private readonly IMailService _mailService;
 
-
-		public AuthService(IConfiguration configuration, UserManager<Domain.Entities.Identity.AppUser> userManager, ITokenHandler tokenHandler, SignInManager<Domain.Entities.Identity.AppUser> signInManager, IUserService userService)
+		public AuthService(IConfiguration configuration, UserManager<Domain.Entities.Identity.AppUser> userManager, ITokenHandler tokenHandler, SignInManager<Domain.Entities.Identity.AppUser> signInManager, IUserService userService, IMailService mailService)
 		{
 			_configuration = configuration;
 			_userManager = userManager;
 			_tokenHandler = tokenHandler;
 			_signInManager = signInManager;
 			_userService = userService;
+			_mailService = mailService;
 		}
 
 		public async Task<LoginUserResponse> GoogleLoginAsync(string IdToken, int accessTokenLifeTime)
@@ -75,7 +78,7 @@ namespace ECommerceAPI.Persistence.Services
 			}
 
 			Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime, user);
-			await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 300);
+			await _userService.UpdateRefreshTokenAsync(token.RefreshToken, user, token.Expiration, 300);
 
 			return new()
 			{
@@ -108,7 +111,7 @@ namespace ECommerceAPI.Persistence.Services
 				//authentication successfull ..
 				//authorization ...
 				Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime, user);
-				await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 300);
+				await _userService.UpdateRefreshTokenAsync(token.RefreshToken, user, token.Expiration, 300);
 
 				response.Token = token;
 				response.Message = "User has successfuly logon";
@@ -125,13 +128,26 @@ namespace ECommerceAPI.Persistence.Services
 			//return response;
 		}
 
+		public async Task PasswordResetAsync(string email)
+		{
+			AppUser user = await _userManager.FindByEmailAsync(email);
+			if(user != null)
+			{
+				string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+				//byte[] tokenBytes = Encoding.UTF8.GetBytes(resetToken);
+				//resetToken = WebEncoders.Base64UrlEncode(tokenBytes);
+				resetToken = resetToken.UrlEncode();
+				await _mailService.SendPasswordResetMailAsync(email,user.Id,resetToken);
+			}
+		}
+
 		public async Task<LoginUserResponse> RefreshTokenLoginAsync(string refreshToken)
 		{
 			AppUser? user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
 			if(user == null && user?.RefreshTokenEndDate > DateTime.UtcNow)
 			{
 				Token token = _tokenHandler.CreateAccessToken(15,user);
-				await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 300);
+				await _userService.UpdateRefreshTokenAsync(token.RefreshToken, user, token.Expiration, 300);
 				return new()
 				{
 					Token = token,
@@ -152,5 +168,18 @@ namespace ECommerceAPI.Persistence.Services
 
 		}
 
+		public async Task<bool> VerifyResetTokenAsync(string resetToken, string userId)
+		{
+			AppUser user = await _userManager.FindByIdAsync(userId);
+			if(user != null)
+			{
+				//byte[] tokenBytes = WebEncoders.Base64UrlDecode(resetToken);
+				//resetToken = Encoding.UTF8.GetString(tokenBytes);
+				resetToken = resetToken.UrlDecode();
+				return await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider,"ResetPassword",resetToken);
+			}
+
+			return false;
+		}
 	}
 }

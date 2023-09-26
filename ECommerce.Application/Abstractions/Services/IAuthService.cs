@@ -10,6 +10,7 @@ namespace ECommerceAPI.Application.Abstractions.Services
 {
 	public interface IAuthService: IInternalAuthService, IExternalAuthService
 	{
-		
+		Task PasswordResetAsync(string email);
+		Task<bool> VerifyResetTokenAsync(string resetToken,string userId);
 	}
 }

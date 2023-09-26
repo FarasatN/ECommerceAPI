@@ -2,6 +2,7 @@
 using ECommerceAPI.Application.Abstractions.Services.Authentications;
 using ECommerceAPI.Application.Repositories.Basket_App;
 using ECommerceAPI.Application.Repositories.Basket_Item_App;
+using ECommerceAPI.Application.Repositories.CompletedOrder_App;
 using ECommerceAPI.Application.Repositories.Customer_App;
 using ECommerceAPI.Application.Repositories.File_App;
 using ECommerceAPI.Application.Repositories.InvoiceFile_App;
@@ -12,6 +13,7 @@ using ECommerceAPI.Domain.Entities.Identity;
 using ECommerceAPI.Persistence.Contexts;
 using ECommerceAPI.Persistence.Repositories.Basket_Pers;
 using ECommerceAPI.Persistence.Repositories.BasketItem_Pers;
+using ECommerceAPI.Persistence.Repositories.CompletedOrder_Pers;
 using ECommerceAPI.Persistence.Repositories.Customer_Pers;
 using ECommerceAPI.Persistence.Repositories.File_Pers;
 using ECommerceAPI.Persistence.Repositories.InvoiceFile_Pers;
@@ -19,6 +21,7 @@ using ECommerceAPI.Persistence.Repositories.Order_Pers;
 using ECommerceAPI.Persistence.Repositories.Product_Pers;
 using ECommerceAPI.Persistence.Repositories.ProductImageFile_Pers;
 using ECommerceAPI.Persistence.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,11 +45,10 @@ namespace ECommerceAPI.Persistence
 					options.Password.RequireDigit = false;
 					options.Password.RequireLowercase = false;
 					options.Password.RequireUppercase = false;
-
-
 				}
 
-			).AddEntityFrameworkStores<ECommerceAPIDbContext>();
+			).AddEntityFrameworkStores<ECommerceAPIDbContext>()
+				.AddDefaultTokenProviders();
 
 
 			//services.AddSingleton<IProductReadRepository, ProductReadRepository>();
@@ -74,6 +76,9 @@ namespace ECommerceAPI.Persistence
 			services.AddScoped<IBasketWriteRepository, BasketWriteRepository>();
 			services.AddScoped<IBasketItemReadRepository, BasketItemReadRepository>();
 			services.AddScoped<IBasketItemWriteRepository, BasketItemWriteRepository>();
+
+			services.AddScoped<ICompletedOrderReadRepository, CompletedOrderReadRepository>();
+			services.AddScoped<ICompletedOrderWriteRepository, CompletedOrderWriteRepository>();
 
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IAuthService, AuthService>();

@@ -1,6 +1,8 @@
-﻿using ECommerceAPI.Application.Features.Commands.AppUser.CreateUser;
+﻿using ECommerceAPI.Application.Abstractions.Services;
+using ECommerceAPI.Application.Features.Commands.AppUser.CreateUser;
 using ECommerceAPI.Application.Features.Commands.AppUser.GoogleLogin;
 using ECommerceAPI.Application.Features.Commands.AppUser.LoginUser;
+using ECommerceAPI.Application.Features.Commands.AppUser.UpdatePassword;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,10 +15,12 @@ namespace ECommerceAPI.API.Controllers
 	public class UsersController : ControllerBase
 	{
 		private readonly IMediator _mediator;
+		private readonly IMailService _mailService;
 
-		public UsersController(IMediator mediator)
+		public UsersController(IMediator mediator, IMailService mailService)
 		{
 			_mediator = mediator;
+			_mailService = mailService;
 		}
 
 		[HttpPost]
@@ -27,12 +31,19 @@ namespace ECommerceAPI.API.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("Test")]
-		public IActionResult Test()
+		[HttpPost("update-password")]
+		public async Task<IActionResult> UpdatePassword(UpdatePasswordCommandRequest updatePasswordCommandRequest)
 		{
-
-			return Ok("Test User");
+			var response = await _mediator.Send(updatePasswordCommandRequest);
+			return Ok(response);
 		}
+
+		//[HttpGet("Test")]
+		//public async Task<IActionResult> ExampleMailTest()
+		//{
+		//	await _mailService.SendMailAsync("farasatnovruzov@gmail.com", "dfdfdfg","dfdf");
+		//	return Ok();
+		//}
 
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ECommerceAPI.Application.Abstractions.Services;
 using ECommerceAPI.Application.Abstractions.Storage;
 using ECommerceAPI.Application.Abstractions.Token;
 using ECommerceAPI.Infrastructure.Services;
@@ -20,8 +21,8 @@ namespace ECommerceAPI.Infrastructure
 			//serviceCollection.AddScoped<IFileService, FileService>();	
 
 			serviceCollection.AddScoped<IStorageService,StorageService>();
-
 			serviceCollection.AddScoped<ITokenHandler,TokenHandler>();
+			serviceCollection.AddScoped<IMailService,MailService>();
 		}
 
 		public static void AddStorage<T>(this IServiceCollection serviceCollection) where T: class,IStorage
