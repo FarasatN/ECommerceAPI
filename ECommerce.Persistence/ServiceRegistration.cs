@@ -4,8 +4,10 @@ using ECommerceAPI.Application.Repositories.Basket_App;
 using ECommerceAPI.Application.Repositories.Basket_Item_App;
 using ECommerceAPI.Application.Repositories.CompletedOrder_App;
 using ECommerceAPI.Application.Repositories.Customer_App;
+using ECommerceAPI.Application.Repositories.Endpoint_App;
 using ECommerceAPI.Application.Repositories.File_App;
 using ECommerceAPI.Application.Repositories.InvoiceFile_App;
+using ECommerceAPI.Application.Repositories.Menu_App;
 using ECommerceAPI.Application.Repositories.Order_App;
 using ECommerceAPI.Application.Repositories.Product_App;
 using ECommerceAPI.Application.Repositories.ProductImageFile_App;
@@ -15,8 +17,10 @@ using ECommerceAPI.Persistence.Repositories.Basket_Pers;
 using ECommerceAPI.Persistence.Repositories.BasketItem_Pers;
 using ECommerceAPI.Persistence.Repositories.CompletedOrder_Pers;
 using ECommerceAPI.Persistence.Repositories.Customer_Pers;
+using ECommerceAPI.Persistence.Repositories.Endpoint_Pers;
 using ECommerceAPI.Persistence.Repositories.File_Pers;
 using ECommerceAPI.Persistence.Repositories.InvoiceFile_Pers;
+using ECommerceAPI.Persistence.Repositories.Menu_Pers;
 using ECommerceAPI.Persistence.Repositories.Order_Pers;
 using ECommerceAPI.Persistence.Repositories.Product_Pers;
 using ECommerceAPI.Persistence.Repositories.ProductImageFile_Pers;
@@ -80,14 +84,20 @@ namespace ECommerceAPI.Persistence
 			services.AddScoped<ICompletedOrderReadRepository, CompletedOrderReadRepository>();
 			services.AddScoped<ICompletedOrderWriteRepository, CompletedOrderWriteRepository>();
 
+			services.AddScoped<IEndpointReadRepository, EndpointReadRepository>();
+			services.AddScoped<IEndpointWriteRepository, EndpointWriteRepository>();
+			services.AddScoped<IMenuReadRepository, MenuReadRepository>();
+			services.AddScoped<IMenuWriteRepository, MenuWriteRepository>();
+
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<IAuthService, AuthService>();
 			services.AddScoped<IInternalAuthService, AuthService>();
 			services.AddScoped<IExternalAuthService, AuthService>();
 			services.AddScoped<IBasketService, BasketService>();
 			services.AddScoped<IOrderService, OrderService>();
-
-
+			services.AddScoped<IRoleService, RoleService>();
+			services.AddScoped<IAuthorizationEndpointService, AuthorizationEndpointService>();
+			services.AddScoped<IProductService, ProductService>();
 
 			return services;
 		}

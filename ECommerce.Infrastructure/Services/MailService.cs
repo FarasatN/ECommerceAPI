@@ -19,6 +19,7 @@ namespace ECommerceAPI.Infrastructure.Services
 			_configuration = configuration;
 		}
 
+
 		public async Task SendMailAsync(string to, string subject, string body, bool isBodyHtml = true)
 		{
 
@@ -55,5 +56,15 @@ namespace ECommerceAPI.Infrastructure.Services
 
 			await SendMailAsync(to, "Request for Password Updating", mail.ToString());
 		}
+
+
+		public async Task SendCompletedOrderMailAsync(string to, string orderCode, DateTime orderDate, string userName)
+		{
+			string mail = $"Sir {userName}, Hi<br>" +
+				$"{orderDate} tarihinde vermis oldugunuz {orderCode} kodlu siparisiniz tamamlanmis ve karqo firmasina verilmisdir";
+			await SendMailAsync(to, $"{orderCode} No. order completed", mail);
+
+		}
+
 	}
 }

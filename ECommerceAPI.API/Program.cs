@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using ECommerceAPI.API.Extensions;
 using ECommerceAPI.SignalR;
 using ECommerceAPI.SignalR.Hubs;
+using ECommerceAPI.API.Filters;
 
 internal class Program
 {
@@ -86,7 +87,11 @@ internal class Program
 		//builder.Services.AddCors(options=>options.AddDefaultPolicy(policy=>policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));//her kes request ede biler- duzgun deyil
 		builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
-		builder.Services.AddControllers(options=>options.Filters.Add<ValidationFilter>()).AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>()).ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+		builder.Services.AddControllers(options=>
+		{
+			options.Filters.Add<ValidationFilter>();
+			//options.Filters.Add<RolePermissionFilter>();
+		}).AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>()).ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddSwaggerGen();

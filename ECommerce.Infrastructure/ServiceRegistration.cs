@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ECommerceAPI.Application.Abstractions.Services;
+using ECommerceAPI.Application.Abstractions.Services.Configurations;
 using ECommerceAPI.Application.Abstractions.Storage;
 using ECommerceAPI.Application.Abstractions.Token;
 using ECommerceAPI.Infrastructure.Services;
+using ECommerceAPI.Infrastructure.Services.Configurations;
 using ECommerceAPI.Infrastructure.Services.Storage;
 using ECommerceAPI.Infrastructure.Services.Storage.Local;
 using ECommerceAPI.Infrastructure.Services.Token;
@@ -23,6 +25,8 @@ namespace ECommerceAPI.Infrastructure
 			serviceCollection.AddScoped<IStorageService,StorageService>();
 			serviceCollection.AddScoped<ITokenHandler,TokenHandler>();
 			serviceCollection.AddScoped<IMailService,MailService>();
+			serviceCollection.AddScoped<IApplicationService, ApplicationService>();
+			serviceCollection.AddScoped<IQRCodeService, QRCodeService>();
 		}
 
 		public static void AddStorage<T>(this IServiceCollection serviceCollection) where T: class,IStorage
